@@ -1,0 +1,24 @@
+body, html {
+  height: 100%;
+  }
+
+#classicformpage .view {
+    background-image: url(http://gbsoftinc.com/wpgb/wp-content/uploads/2019/12/imagebackground2-scaled.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    height: 100vh;
+  }
+
+  #classicformpage .card {
+    /* background-color: rgba(103, 104, 100, 0.404); */
+    background-color: #6c757d;
+  }
+  
+  #classicformpage h6 {
+    line-height: 1.7;
+  }
+  
+  #classicformpage label {
+    color: #fff !important;
+  }

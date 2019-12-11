@@ -1,0 +1,14 @@
+body, html {
+    height: 100%;
+  }
+  .bg {
+    background-image: url(http://gbsoftinc.com/wpgb/wp-content/uploads/2019/12/paintbrush-scaled.jpg);
+    height: 50vh;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+  }
+  .subtext-header{
+    font-size: 24px;
+  }

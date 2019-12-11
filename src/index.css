@@ -1,0 +1,93 @@
+.btn-flat {
+    background-color: purple;
+    color: white;
+  }
+
+  .btn-xxl {
+    padding: 1rem 1.5rem;
+    font-size: 1.5rem;
+  }
+  body {
+    background: url(../src/assets/img/body_bkg_img.png) no-repeat center center fixed;
+    background-size: cover;
+ }
+
+ .mymdbtn {
+    margin: 10px;
+
+}
+
+.bkgtxtimg {
+    background-color: #000000;
+    opacity: 0.5;
+    padding: 2px;
+    margin: auto;
+  }
+
+  .jumbotronimg{
+    margin: 0;
+    background: url(../src/assets/img/tools.jpeg);
+    
+  }
+
+  .jumbotronprovimg{
+    margin: 0;
+    background: url(http://gbsoftinc.com/wpgb/wp-content/uploads/2019/12/provider_service_bkg_img.jpg);
+    
+  }
+  .card {
+    margin: 10px;
+}
+.servicelink{
+   color: #ab2e6d;
+   text-decoration: none;
+}
+
+.servicelink:hover{
+    color: #890547;
+    text-decoration: none;
+ }
+
+ .service-card {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all .1s ease-in;
+    min-height: 100%;    
+  }
+
+  .service-card:hover {
+    top: -2px;
+    box-shadow: 0 4px 5px rgba(0,0,0,0.2);
+  }
+
+   .dropdown-toggle:after { 
+      border-top: 0 !important;
+      border-right: 0 !important;
+      border-bottom: 0 !important;
+      border-left: 0 !important;
+   } 
+   .dropdown-toggle:before { 
+    border-top: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+    border-left: 0 !important;
+ } 
+
+ .mdbfooter{
+  background-color: rgba(156, 39, 176, 0.7);
+}
+
+.bg-mycolor {
+  background-color: #e6ebef;;
+}
+
+.all-service-card{
+  padding-bottom: 10px;
+}
+
+.fab{
+  color: #aa66cc;
+}
+.inputservices{
+  margin-left: 10px;
+  margin-top: 10px;
+}
