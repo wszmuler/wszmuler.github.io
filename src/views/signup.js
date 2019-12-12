@@ -87,7 +87,7 @@ class Signup extends React.Component {
 					}
 					// Examine the text in the response
           return response.json();
-          console.log(response)
+          console.log(response);
 				})
 				.catch(function(err) {
 					console.log("Fetch Error :-S", err);
@@ -95,7 +95,7 @@ class Signup extends React.Component {
 
 				Promise.all([fetchUsers])
 				.then(data => {
-          this.setState({userRegistered : true})
+          this.setState({userRegistered : true});
           return data[0];
           
 				})
