@@ -12,9 +12,9 @@ export const Services = () => {
 							return store.service.map((service, index) => {
 								if (service) {
 									return (
-										<div className="col-12 col-sm-6 col-lg-4 all-service-card" key={index}>
+										<div className="col-12 col-sm-6 col-lg-4 all-service-card" key={service.acf.serviceID}>
 											<ServiceCardMain
-												index={index}
+												index={service.acf.serviceID}
 												serviceID={service.acf.serviceID}
 												serviceBackgroundImg={service.acf.serviceBackgroundImg}
 												serviceTitle={service.acf.serviceTitle}

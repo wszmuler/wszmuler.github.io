@@ -5,7 +5,7 @@ import { ProviderCardMain } from "../components/providercardmain";
 import PropTypes from "prop-types";
 import { match } from "minimatch";
 import { Container, Row, Col} from 'react-bootstrap';
-
+import { Link, Redirect } from "react-router-dom";
 import apiConfig from '../utils';
 import axios from 'axios';
 
@@ -61,6 +61,8 @@ export const ProvidersMain = props => {
 	const [dataLoaded, setdataLoaded] = useState(false);
 
 	const [endPoint, setendPoint] = useState('');
+	
+	const [perPage, setPerPage] = useState(6);
 
 	const [collector, setCollector] = useState('');
 		
@@ -71,19 +73,19 @@ export const ProvidersMain = props => {
 
 	useEffect(() => {
 		//console.log('PROVIDERS', providers)
-		//setendPoint(apiConfig.apiUrl+'/provider?filter[meta_key]=serviceid&filter[meta_value]='+index);
+		//setendPoint(apiConfig.apiUrl+'/provider?filter[meta_key]=providerid&filter[meta_value]='+index);
 
 		console.log(`${endPoint}`);
-		setendPoint(apiConfig.apiUrl+'/provider');
+		setendPoint(apiConfig.apiUrl+'/provider?per_page=');
 	},[]);
 
 
 
 	useEffect(() => {
 			document.title = 'Providers';
-			console.log(`${endPoint}`);
+			console.log(`${endPoint}`+perPage);
 
-			const fetchProviders = fetch(`${endPoint}`)
+			const fetchProviders = fetch(`${endPoint}`+perPage)
 				.then(response => {
 					if (!response.ok) {
 						throw Error(response.statusText);
@@ -104,6 +106,33 @@ export const ProvidersMain = props => {
 				});
 
 	},[endPoint]);
+
+
+	useEffect(() => {
+		document.title = 'Providers';
+		console.log(`${endPoint}`+perPage);
+
+		const fetchProviders = fetch(`${endPoint}`+perPage)
+			.then(response => {
+				if (!response.ok) {
+					throw Error(response.statusText);
+				}
+				// Examine the text in the response
+				return response.json();
+			})
+			.catch(function(err) {
+				console.log("Fetch Error :-S", err);
+			});
+
+			Promise.all([fetchProviders])
+			.then(data => {
+				setProviders(data[0]);
+			})
+			.catch(function(err) {
+				console.log("Error with resolving promises.", err);
+			});
+
+},[perPage]);
 
 
 
@@ -135,10 +164,20 @@ export const ProvidersMain = props => {
 
 
   const handleSelectChange = (e) => {
-	(e.target.value > 0) ? 	setendPoint(apiConfig.apiUrl+'/provider?filter[meta_key]=serviceid&filter[meta_value]='+e.target.value)
-	: setendPoint(apiConfig.apiUrl+'/provider');
+	(e.target.value > 0) ? 	setendPoint(apiConfig.apiUrl+'/provider?filter[meta_key]=serviceid&filter[meta_value]='+e.target.value+'&per_page=')
+	: setendPoint(apiConfig.apiUrl+'/provider?perpage=');
 	console.log(`${endPoint}`);
 };
+const handlePerPageChange = (e) => {
+	(e.target.value > 0) ? 	setPerPage(e.target.value)
+	: setPerPage(6);
+	console.log(`${endPoint}`);
+};
+
+	if ( localStorage.getItem('token') === null	)
+	{
+		return <Redirect to='/login' />
+	}
 	return (
         <React.Fragment>
            {/* <Container fluid>
@@ -149,8 +188,9 @@ export const ProvidersMain = props => {
 
 				<div className="container">
 					<div className="row">
+						{/* <div className="col-4 align-self-start inputservices">Select a service:  */}
 						<div className="col-4 align-self-start inputservices">
-							<select className="browser-default custom-select" onChange={handleSelectChange}>
+							<select className="browser-default custom-select" onChange={handleSelectChange}> 
 							<option value= {0}>Choose your service</option>
 							   {services && services.map (service => {
 								   return (
@@ -159,13 +199,15 @@ export const ProvidersMain = props => {
 
 							   	})
 							   }
-
-							{/* <option value="1">LANDSCAPE</option>
-							<option value="2">MAINTENANCE</option>
-							<option value="3">PAINTING</option>
-							<option value="4">PLUMBING</option>
-							<option value="5">REMODELING</option>
-							<option value="6">ROOFING</option> */}
+							</select>
+						</div>	
+						{/* <div className="col-4 align-self-start inputservices">Number of service per page:  */}
+						<div className="col-4 align-self-start inputservices">
+							<select className="browser-default custom-select" onChange={handlePerPageChange}>
+								<option value= {6}>Provider per page</option>
+								<option value= {12}>12</option>
+								<option value= {48}>48</option>
+								<option value= {100}>100</option>
 							</select>
 						</div>	
 					</div>
@@ -192,7 +234,7 @@ export const ProvidersMain = props => {
 													providerAvatar={provider.acf.avatar}
 													providerRating={provider.acf.providerrating}
 													providerUserID={provider.acf.userid}
-													providerLink={'/user/'+ provider.acf.userid}
+													providerLink={'/profile/'+ provider.acf.userid}
 												/>
 											</div>
 										);

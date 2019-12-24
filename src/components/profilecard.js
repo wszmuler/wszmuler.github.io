@@ -38,7 +38,7 @@ function getProviderName (userid){
 }
 
 
-export function ProviderCardMain(props) {
+export function ProviderCard(props) {
 
 	
 	return (
@@ -91,7 +91,7 @@ export function ProviderCardMain(props) {
 									</small>
 									<small>
 										<Link to={"/servicereview/"+props.index} className="servicelink">
-											<span>Leave a review </span>
+											<span>Leave a review</span>
 										</Link>
 									</small>
 								</h2>
@@ -104,7 +104,7 @@ export function ProviderCardMain(props) {
 	);
 }
 
-ProviderCardMain.propTypes = {
+ProviderCard.propTypes = {
 	providerCompanyName: PropTypes.string,
 	providerUserName: PropTypes.string,
 	providerPhoneNumber: PropTypes.string,

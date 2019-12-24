@@ -3,9 +3,11 @@ import { Form, Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FacebookLoginButton, GoogleLoginButton, GithubLoginButton } from "react-social-login-buttons";
 import { NavDropdown  } from 'react-bootstrap';
 import axios from 'axios';
-import apiConfig from '../utils'
-import './logindropdown.css'
-import { Redirect } from 'react-router-dom';
+import apiConfig from '../utils';
+import './logindropdown.css';
+import { MDBContainer, MDBBtn, MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter, MDBRow, } from 'mdbreact';
+import FormError from '../components/formerror';
+import { Redirect } from "react-router-dom";
 
 
 class LoginDropDown extends Component {
@@ -20,11 +22,12 @@ class LoginDropDown extends Component {
                 userNiceName: '',
                 userEmail: '',
                 loading: false,
-                error: ''
+                error: '',
+                modal: false,
+                errorMessage: null
           };
     }
 
-   
 
       handleButtonClick = e => {
         this.setState(state => {
@@ -65,7 +68,6 @@ class LoginDropDown extends Component {
         localStorage.removeItem( 'userEmail');
         localStorage.removeItem( 'userID');
         window.location.reload(false);
-
     }
     
     // renderRedirect = () => {
@@ -80,18 +82,16 @@ class LoginDropDown extends Component {
 
 		const loginData = {
 			username: this.state.username,
-			password: this.state.password,
+			password: this.state.password
 		};
 
 		this.setState( { loading: true }, () => {
 			axios.post( `${siteUrl}/token`, loginData )
 				.then( res => {
-
 					if ( undefined === res.data.token ) {
-						this.setState( { error: res.data.message, loading: false } );
+                        this.setState( { error: res.data.message, loading: false } );
 						return;
 					}
-
 					const { token, userID, user_nicename, user_display_name, user_email } = res.data;
 
 					localStorage.setItem( 'token', token );
@@ -100,30 +100,32 @@ class LoginDropDown extends Component {
                     localStorage.setItem( 'userFullName', user_display_name );
                     localStorage.setItem( 'userEmail', user_email );
 
+                    this.setState({ errorMessage: null});
 
-					this.setState( {
+                    this.setState( {
 						loading: false,
                         token: token,
                         userID: userID,
 						userNiceName: user_display_name,
 						userEmail: user_email,
 						loggedIn: true
-                    } )
+                    } );
+
                 } 
                 )
 				.catch( err => {
                     this.setState( { error: err.response.data.message, loading: false } );
-				} )
-        } )
+                    this.setState({ errorMessage: 'Invalid Username or Password!'}); 
+				});
+        });
 	};
 
     componentDidUpdate (prevProps, prevState ){
-        // if (this.state.loggedIn) 
-        // {
-        //     window.location.reload(false);
-        // }
+
         if (this.state.loggedIn)
         {
+            // let path = '/profile' ;
+            // this.props.history.push(path)
             window.location.reload(false);
         }
     }
@@ -131,13 +133,11 @@ class LoginDropDown extends Component {
     render() {
 
         const { username, password, userNiceName, userloggedin, error, loading } = this.state;
-
 		const user = ( userNiceName ) ? userNiceName : localStorage.getItem( 'userName' );
-
         this.state.userloggedin = this.props.isLoggedIn
 
         let loggedInDropdown = [
-            <NavDropdown.Item >View my profile</NavDropdown.Item>,
+            <NavDropdown.Item href="/profile" >View my profile</NavDropdown.Item>,
             // <NavDropdown.Item >Request a service</NavDropdown.Item>,
             <NavDropdown.Divider />,
             <NavDropdown.Item  eventKey = '99' onClick = {this.handleDropdownItemClick} >Log out</NavDropdown.Item>,
@@ -172,7 +172,7 @@ class LoginDropDown extends Component {
                             onChange={ this.handleOnChange }
                     />
                    <Form.Text className="text-muted">
-                            We'll never share your info with anyone, even our Teachers.
+                            We will never share your info with anyone, even our Teachers.
                     </Form.Text>
                 </Form.Group>
 
@@ -190,10 +190,15 @@ class LoginDropDown extends Component {
                     <Form.Check type="checkbox" label="Remember me." inline/>
                     <Button id="submitbutton" variant="primary" type="submit" Right>Submit</Button>
                 </Form.Group>
-
+                <MDBRow fluid>
+                            {this.state.errorMessage !== null ? (
+                                <FormError theMessage={this.state.errorMessage} />
+                            ) : null}
+                </MDBRow>
                 </Form>
                 <NavDropdown.Divider />
                 <NavDropdown.Item href="/signup"> New here ? <b>Join Us</b> </NavDropdown.Item>
+
 
             </React.Fragment> 
 

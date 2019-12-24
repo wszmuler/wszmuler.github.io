@@ -136,7 +136,7 @@ export const Providers = props => {
 													providerAvatar={provider.acf.avatar}
 													providerRating={provider.acf.providerrating}
 													providerUserID={provider.acf.userid}
-													providerLink={'/user/'+ provider.acf.userid}
+													providerLink={'/profile/'+ provider.acf.userid}
 												/>
 											</div>
 										);

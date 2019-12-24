@@ -22,84 +22,68 @@ import {
   MDBAnimation
 } from "mdbreact";
 import { Link, Redirect } from "react-router-dom";
+import axios from 'axios';
 import { Button } from "react-bootstrap";
 import "../styles/signup.css";
 
+
 import apiConfig from '../utils';
+
 
 import FormError from '../components/formerror';
 
-class Signup extends React.Component {
+class Login extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
       collapseID: "",
-      displayName: '',
-      email: '',
-      passOne: '',
-      passTwo: '',
+      username: '',
+      password: '',
       errorMessage: null,
-      userRegistered : false,
+      userIsLoggedIn : false,
+      error : '',
+      loading: false
     };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
 
-  addNewUser (registrationInfo){
-
-    const proxyUrl = '';
-    // 'https://cors-anywhere.herokuapp.com/';
-    const url = apiConfig.apiUrl+'/users/register';
-          // +
-          // '/?rest_route='+ `${registrationInfo.rest_route}`+
-          // '&email='+ registrationInfo.email+
-          // '&password='+registrationInfo.password+
-          // '&gbAuthKey='+registrationInfo.gbAuthKey;
-
-    const fetchUsers = fetch(`${url}`,
-        { 
-            method : 'post',
-            headers : { 
-
-              Accept : "application/json",
-              "Content-Type" : "application/json"
-
-              //   "Authorization" : "Bearer k|SIG^tf,*S/b9yrjJ`a#)T$|^liNbyW.j6mAQVUJ>@`oBk;#|miwC%4OT~X7AB",
-            //      "Access-Control-Allow-Origin" : "*"
-              },
-            body : //{
-                // 'rest_route' : `${registrationInfo.rest_route}`,
-                //'token' : 'k|SIG^tf,*S/b9yrjJ`a#)T$|^liNbyW.j6mAQVUJ>@`oBk;#|miwC%4OT~X7AB',
-                //username : registrationInfo.displayName,
-                //email : registrationInfo.email,
-                //password : registrationInfo.password
-                // 'gbAuthKey' : registrationInfo.gbAuthKey,
-             //}
-
-                 JSON.stringify(registrationInfo)
-        }
-        )
-				.then(response => {
-					if (!response.ok) {
-						throw Error(response.statusText);
+  logUser (loginInfo){
+		const siteUrl = apiConfig.apiJWt;
+    this.setState( { loading: true }, () => {
+			axios.post( `${siteUrl}/token`, loginInfo )
+				.then( res => {
+					if ( undefined === res.data.token ) {
+                        this.setState( { error: res.data.message, loading: false } );
+						return;
 					}
-					// Examine the text in the response
-          return response.json();
-          console.log(response);
-				})
-				.catch(function(err) {
-					console.log("Fetch Error :-S", err);
-				});
+					const { token, userID, user_nicename, user_display_name, user_email } = res.data;
 
-				Promise.all([fetchUsers])
-				.then(data => {
-          this.setState({userRegistered : true})
-          return data[0];
-          
-				})
-				.catch(function(err) {
-					console.log("Error with resolving promises.", err);
-				});
+					localStorage.setItem( 'token', token );
+                    localStorage.setItem( 'userName', user_nicename );
+                    localStorage.setItem( 'userID', userID);
+                    localStorage.setItem( 'userFullName', user_display_name );
+                    localStorage.setItem( 'userEmail', user_email );
+                    this.setState({ errorMessage: null});
+
+                    this.setState( {
+            						loading: false,
+                        token: token,
+                        userID: userID,
+                        userNiceName: user_display_name,
+                        userEmail: user_email,
+                        userIsLoggedIn: true
+                    });
+
+                })
+          .catch( err => {
+                      this.setState( { error: err.response.data.message, loading: false } );
+                      this.setState({ errorMessage: 'Invalid Username or Password!'}); 
+          });
+      });
 	}
 
   toggleCollapse = collapseID => () =>
@@ -117,7 +101,7 @@ class Signup extends React.Component {
     validateField = () => {
       let result = false;
       if ((this.errorMessage == null) && ((this.state.displayName.length < 4))) {
-        this.setState({ errorMessage: 'Username must be more than 4 characters' });
+        this.setState({ errorMessage: 'Username is less than 4 characters' });
         result = false;
         return result;
       } else {
@@ -137,19 +121,13 @@ class Signup extends React.Component {
     }
     
     handleSubmit = (e) => {
-      if (this.validateField()) {
-        var registrationInfo = {
-            username: this.state.displayName,
-            email: this.state.email,
-            password: this.state.passOne,
-            role : 'author'
-            //gbAuthKey : 'v3YCc$PT',
+        var loginInfo = {
+            username: this.state.username,
+            password: this.state.password
           };
-        console.log(registrationInfo);
-        this.addNewUser(registrationInfo);
-      }
+        this.logUser(loginInfo);
       e.preventDefault();
-      }
+      };
 
   render() {
     const overlay = (
@@ -160,16 +138,16 @@ class Signup extends React.Component {
       />
     );
 
-    if (this.state.userRegistered === true) {
-      return <Redirect to='/profile' />
+    if (this.state.userIsLoggedIn === true) {
+      return <Redirect to='/profile' />;
     }
+
     if (!(localStorage.getItem('token') === null)	)
     {
       return <Redirect to='/profile' />
     }
-
+    
     return (
-      
       <form id="classicformpage" onSubmit={this.handleSubmit}>  
         <MDBView>
           <MDBMask className="d-flex justify-content-center align-items-center gradient">
@@ -196,7 +174,7 @@ class Signup extends React.Component {
                     <MDBCard id="classic-card">
                       <MDBCardBody className="white-text">
                         <h3 className="text-center">
-                          <MDBIcon icon="user" /> Register:
+                          <MDBIcon icon="user" /> LOGIN:
                         </h3>
                         <hr className="hr-light" />
                         <MDBInput
@@ -204,20 +182,9 @@ class Signup extends React.Component {
                           iconClass="white-text"
                           label="Your Username"
                           icon="user"
-                          name='displayName'
-                          value={this.state.displayName}
+                          name='username'
+                          value={this.state.username}
                           onChange={this.handleChange}
-                        />
-                        <MDBInput
-                          className="white-text"
-                          iconClass="white-text"
-                          label="Your Email"
-                          icon="envelope"
-                          name='email'
-                          type = 'email'
-                          value={this.state.email}
-                          onChange={this.handleChange}
-                          autoComplete = 'off'
                         />
                         <MDBInput
                           className="white-text"
@@ -225,18 +192,8 @@ class Signup extends React.Component {
                           label="Your password"
                           icon="lock"
                           type="password"
-                          name='passOne'
-                          value={this.state.passOne}
-                          onChange={this.handleChange}
-                        />
-                        <MDBInput
-                          className="white-text"
-                          iconClass="white-text"
-                          label="Re-type password"
-                          icon="lock"
-                          type="password"
-                          name='passTwo'
-                          value={this.state.passTwo}
+                          name='password'
+                          value={this.state.password}
                           onChange={this.handleChange}
                         />
                         <MDBRow fluid>
@@ -247,7 +204,7 @@ class Signup extends React.Component {
                               ) : null}
                         </MDBRow>
                         <div className="text-center mt-4">
-                          <MDBBtn outline color="white" type = 'submit'>Sign Up</MDBBtn>
+                          <MDBBtn outline color="white" type = 'submit'>Submit</MDBBtn>
                           <hr className="hr-light" />
                           <div className="text-center d-flex justify-content-center white-label">
                             <a href="#!" className="p-2 m-2">
@@ -286,4 +243,4 @@ class Signup extends React.Component {
   }
 }
 
-export default Signup;
+export default Login;
